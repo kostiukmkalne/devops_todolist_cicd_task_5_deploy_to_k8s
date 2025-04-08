@@ -73,6 +73,7 @@ jobs:
     - uses: actions/download-artifact@v4
       name: Download python artifacts
       with:
+
         name: python-artifacts
         path: .
 
@@ -112,9 +113,29 @@ jobs:
 
     - name: Package Helm
       run: helm package ./todoapp
-
+      
     - name: Upload Helm Artifact
       uses: actions/upload-artifact@v4
       with:
         name: helm-package
         path: ./*.tgz
+
+  deploy-helm-dev:
+    name: Deploy Helm
+    uses: ./.github/workflows/deployment-workflow.yml
+    needs: [helm-ci, docker-ci]
+    secrets: inherit
+    with:
+      environment: development
+      version: ${{ github.sha }}
+
+  deploy-helm-staging:
+    name: Deploy Helm
+    uses: ./.github/workflows/deployment-workflow.yml
+    needs: deploy-helm-dev
+    secrets: inherit
+    with:
+      environment: staging
+      version: ${{ github.sha }}
+      helm-values-path: ./todoapp/values/stg.yaml
+      helm-release-name: todoapp-staging
