@@ -73,7 +73,6 @@ jobs:
     - uses: actions/download-artifact@v4
       name: Download python artifacts
       with:
-
         name: python-artifacts
         path: .
 
@@ -113,7 +112,7 @@ jobs:
 
     - name: Package Helm
       run: helm package ./todoapp
-      
+
     - name: Upload Helm Artifact
       uses: actions/upload-artifact@v4
       with:
